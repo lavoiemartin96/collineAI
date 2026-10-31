@@ -1,3 +1,5 @@
+import io
+from gTTS import gTTS
 import streamlit as st
 from supabase import create_client
 import google.generativeai as genai
@@ -71,14 +73,11 @@ Consignes :
             st.subheader("📋 Briefing Exécutif")
             st.info(reponse)
 
-            # Lecture vocale automatique
-            st.components.v1.html(f"""
-            <script>
-                var msg = new SpeechSynthesisUtterance({repr(reponse)});
-                msg.lang = 'fr-CA';
-                window.speechSynthesis.speak(msg);
-            </script>
-            """, height=0)
+           # Génération audio avec accent français canadien
+            tts = gTTS(text=reponse, lang="fr", tld="ca")
+            audio_fp = io.BytesIO()
+            tts.write_to_fp(audio_fp)
+            st.audio(audio_fp, format="audio/mp3", autoplay=True)
 
             # Transcriptions officielles vérifiables
             with st.expander("🔍 Voir les extraits officiels du Hansard"):
